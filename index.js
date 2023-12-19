@@ -14,9 +14,19 @@ const exercisesByMuscle = {
     shoulders: ["Shoulder Press", "Lateral Raises", "Front Raises"]
 };
 
+const setsByMuscle = {
+    legs: ["10x3"],
+    back: ["8x3"],
+    chest: ["8x3"],
+    arms: ["12x3"],
+    abs: ["40x3"],
+    shoulders: ["8x3"]
+};
+
 // Function to generate a random exercise for each muscle group
 function generateRandomExercises() {
     const exerciseDisplay = document.getElementById("exerciseDisplay");
+    const setDisplay = document.getElementById("setDisplay");
 
     for (const muscle in exercisesByMuscle) {
         if (exercisesByMuscle.hasOwnProperty(muscle)) {
@@ -24,6 +34,15 @@ function generateRandomExercises() {
             const randomExercise = exercisesByMuscle[muscle][randomIndex];
             const muscleElement = document.getElementById(muscle);
             muscleElement.textContent = `${muscle.charAt(0).toUpperCase() + muscle.slice(1)}: ${randomExercise}`;
+        }
+    }
+
+    for (const set in setsByMuscle) {
+        if (setsByMuscle.hasOwnProperty(set)) {
+            const randomIndex = Math.floor(Math.random() * setsByMuscle[set].length);
+            const randomSet = setsByMuscle[set][randomIndex];
+            const setElement = document.getElementById(set);
+            setElement.textContent += ` ${randomSet}`;
         }
     }
 }

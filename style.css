@@ -16,6 +16,16 @@ body {
     text-align: center;
 }
 
+#mainDisplay{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#exerciseDisplay{
+    padding: 50px;
+}
+
 button {
     padding: 10px 20px;
     font-size: 16px;
