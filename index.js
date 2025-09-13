@@ -1,5 +1,5 @@
 
-import RAPID_API_KEY from './config.js';
+import {RAPID_API_KEY} from './config.js';
 
 // Cache for body part list
 let bodyPartListCache = {};
@@ -124,8 +124,33 @@ async function initializeTooltips() {
             const exerciseInfo = await fetchExerciseInfo(exerciseName);
             console.log('exerciseInfo', exerciseInfo);
             if (exerciseInfo) {
-                tooltip.textContent = exerciseInfo.description || 'No description available';
-                exercise.setAttribute('data-explanation', exerciseInfo.description || 'No description available');
+                const exerciseId = exerciseInfo.id;
+                console.log('exerciseId', exerciseId);
+                const imageUrl = `https://exercisedb.p.rapidapi.com/image?resolution=180&exerciseId=${exerciseId}`;
+                console.log('Image URL:', imageUrl);
+
+                const response = await fetch(imageUrl, {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-host': 'exercisedb.p.rapidapi.com',
+                        'x-rapidapi-key': `${RAPID_API_KEY}`
+                    }
+                });
+                
+                try{
+                    if(response.ok){
+                        const blob = await response.blob();
+                        const imageObjectUrl = URL.createObjectURL(blob);
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imageObjectUrl;
+                        imgElement.alt = exerciseName;
+                        imgElement.style.maxWidth = '100%';
+                        imgElement.style.height = 'auto';
+                        tooltip.appendChild(imgElement);
+                    }
+                } catch (error) {
+                    console.error('Error fetching exercise image:', error);
+                }
             } else {
                 tooltip.textContent = 'No description available';
             }
@@ -145,6 +170,7 @@ async function initializeTooltips() {
 
 // Function to generate random exercises
 async function generateRandomExercises() {
+    console.log('Generating random exercises...');
     const exerciseDisplay = document.getElementById("exerciseDisplay");
     const setDisplay = document.getElementById("setDisplay");
 
