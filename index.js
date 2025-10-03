@@ -1,5 +1,6 @@
 
-import {RAPID_API_KEY} from './config.js';
+// import {RAPID_API_KEY} from './config.js';
+const {RAPID_API_KEY} = process.env
 
 // Cache for body part list
 let bodyPartListCache = {};
