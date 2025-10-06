@@ -3,3 +3,4 @@ App Diagram.drawio
 package-lock.json
 .env
 config.js
+/node_modules

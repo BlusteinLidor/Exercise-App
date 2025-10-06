@@ -1,10 +1,3 @@
-
-// import {RAPID_API_KEY} from './config.js';
-// const {RAPID_API_KEY} = process.env
-require('dotenv').config();
-const RAPID_API_KEY = process.env.RAPID_API_KEY;
-console.log('RAPID_API_KEY:', RAPID_API_KEY);
-
 // Cache for body part list
 let bodyPartListCache = {};
 
@@ -55,19 +48,13 @@ async function fetchExerciseInfo(exerciseName) {
 
     // Clean up exercise name for API
     const cleanExerciseName = exerciseName.toLowerCase().replace(/[^a-z\s]/g, '').trim();
-    const apiUrl = `https://exercisedb.p.rapidapi.com/exercises/name/${cleanExerciseName}`;
+    const apiUrl = '/.netlify/functions/exercise?name=' + encodeURIComponent(cleanExerciseName);
     
     console.log('Original exercise name:', exerciseName);
     console.log('Cleaned exercise name:', cleanExerciseName);
     console.log('API URL:', apiUrl);
 
-    const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-            'x-rapidapi-host': 'exercisedb.p.rapidapi.com',
-            'x-rapidapi-key': `${RAPID_API_KEY}`
-        }
-    });
+    const response = await fetch(apiUrl);
 
     console.log('Response status:', response.status);
     console.log('Response headers:', response.headers);
@@ -130,19 +117,13 @@ async function initializeTooltips() {
             if (exerciseInfo) {
                 const exerciseId = exerciseInfo.id;
                 console.log('exerciseId', exerciseId);
-                const imageUrl = `https://exercisedb.p.rapidapi.com/image?resolution=180&exerciseId=${exerciseId}`;
+                const imageUrl = `/.netlify/functions/image?resolution=180&exerciseId=${exerciseId}`;
                 console.log('Image URL:', imageUrl);
 
-                const response = await fetch(imageUrl, {
-                    method: 'GET',
-                    headers: {
-                        'x-rapidapi-host': 'exercisedb.p.rapidapi.com',
-                        'x-rapidapi-key': `${RAPID_API_KEY}`
-                    }
-                });
-                
-                try{
-                    if(response.ok){
+                const response = await fetch(imageUrl);
+
+                try {
+                    if (response.ok) {
                         const blob = await response.blob();
                         const imageObjectUrl = URL.createObjectURL(blob);
                         const imgElement = document.createElement('img');
@@ -185,13 +166,7 @@ async function generateRandomExercises() {
         // Fetch body part list if not cached
         if (Object.keys(bodyPartListCache).length === 0) {
             console.log('Fetching body part list...');
-            const bodyPartResponse = await fetch('https://exercisedb.p.rapidapi.com/exercises/bodyPartList', {
-                method: 'GET',
-                headers: {
-                    'X-RapidAPI-Key': RAPID_API_KEY,
-                    'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
-                }
-            });
+            const bodyPartResponse = await fetch('/.netlify/functions/bodyPartList');
             bodyPartListCache = await bodyPartResponse.json();
             console.log('Fetched body part list:', bodyPartListCache);
         }
@@ -201,13 +176,7 @@ async function generateRandomExercises() {
             console.log('Fetching exercises by muscle group...');
             const fetchPromises = bodyPartListCache.map(async (muscle) => {
                 try {
-                    const response = await fetch(`https://exercisedb.p.rapidapi.com/exercises/bodyPart/${muscle}`, {
-                        method: 'GET',
-                        headers: {
-                            'X-RapidAPI-Key': RAPID_API_KEY,
-                            'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
-                        }
-                    });
+                    const response = await fetch('/.netlify/functions/bodyPart?muscle=' + encodeURIComponent(muscle));
                     const data = await response.json();
                     const bodyWeightExercises = data.filter(exercise => exercise.equipment === 'body weight');
                     if (bodyWeightExercises.length > 0) {
